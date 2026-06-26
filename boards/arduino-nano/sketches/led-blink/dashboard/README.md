@@ -34,6 +34,10 @@ Parse these in Processing to drive the UI indicator.
 
 ## snapshots
 
+- LED Dashboard
+
+   ![LED](imgs/led-blink.gif)
+
 - LED ON
   
    ![LED ON](imgs/led-on.png)

@@ -60,6 +60,10 @@ pio device monitor --baud 9600
 
 ### snapshots
 
+- LED Dashboard
+
+   ![LED](dashboard/imgs/led-blink.gif)
+
 - LED ON
   
    ![LED ON](dashboard/imgs/led-on.png)
