@@ -1,0 +1,58 @@
+# Git ignore rules for embedded-device-lab
+
+# PlatformIO
+.pio/
+.vscode/
+.vscode-dask.json
+.clang_complete
+.gcc-flags.json
+compile_commands.json
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.elf
+*.hex
+*.bin
+
+# IDE
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Serial monitor logs
+*.log
+
+# EEPROM backups
+*.eep
+
+# Compiled sketches
+*.cpp.o
+*.elf

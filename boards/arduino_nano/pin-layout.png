@@ -1,0 +1,16 @@
+// Placeholder for Arduino Nano pin layout image
+// In a real repository, this would be a high-resolution PNG or SVG showing:
+// - Physical board outline
+// - All GPIO pins labeled with numbers and names (D0-D13, A0-A7)
+// - Power pins (VCC, GND, 5V, 3V3, VIN, AREF)
+// - Functional groupings (SPI, I2C, UART, PWM, ADC)
+// - Special pin markings (interrupt pins, analog-only pins)
+//
+// Image sources:
+// - Official Arduino Nano schematic
+// - Community pinout diagrams on GitHub
+// - Fritzing diagrams
+// - Custom SVG schematics
+
+// This file serves as a placeholder.
+// Replace with actual pin-layout.png or pin-layout.svg

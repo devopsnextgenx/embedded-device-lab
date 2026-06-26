@@ -1,0 +1,16 @@
+// Placeholder for ESP32 DevKit pin layout image
+// In a real repository, this would be a high-resolution PNG or SVG showing:
+// - Physical board outline
+// - All GPIO pins labeled with numbers
+// - Power pins (VCC, GND, 3V3, VIN)
+// - Functional groupings (SPI, I2C, UART, ADC)
+// - Special pin markings (strapping pins, input-only, etc.)
+//
+// Image sources:
+// - Official ESP32 pinout from Espressif
+// - Community pinout diagrams on GitHub
+// - Fritzing diagrams
+// - Custom SVG schematics
+
+// This file serves as a placeholder.
+// Replace with actual pin-layout.png or pin-layout.svg
