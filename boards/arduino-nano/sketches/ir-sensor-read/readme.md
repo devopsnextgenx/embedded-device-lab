@@ -1,4 +1,4 @@
-# Sensor Read Sketch - Documentation
+# IR Sensor Read Sketch - Documentation
 
 ## Overview
 This sketch demonstrates analog sensor reading on an Arduino Nano using ADC (Analog-to-Digital Converter).
@@ -23,8 +23,11 @@ Refer to `../pin-layout.md` for the complete ADC layout and other available pins
 Sensor Read initialized on Arduino Nano
 Sensor Pin: A0
 Raw ADC: 512 | Voltage: 2.50 V
+Obstacle: ACTIVE
 Raw ADC: 256 | Voltage: 1.25 V
+Obstacle: LOW
 Raw ADC: 768 | Voltage: 3.75 V
+Obstacle: ACTIVE
 ...
 ```
 
@@ -41,3 +44,9 @@ Raw ADC: 768 | Voltage: 3.75 V
 - 10-bit resolution (0-1023 for 0-5V)
 - Internal reference: 5V (DEFAULT)
 - Can be changed to 1.1V internal or external reference in code
+
+## Snapshots
+
+- IR Sensor Read
+
+  ![IR Sensor Read](dashboard/imgs/ir-sensor-read.gif)

@@ -1,10 +1,10 @@
-// Sketch metadata for sensor_read
+// Sketch metadata for ir-sensor-read
 
 #ifndef VERSION_H
 #define VERSION_H
 
 #ifndef SKETCH_NAME
-  #define SKETCH_NAME "sensor_read"
+  #define SKETCH_NAME "ir-sensor-read"
 #endif
 
 #ifndef SKETCH_VERSION

@@ -125,7 +125,7 @@ To ensure consistency and Linux/UNIX compatibility:
 
 ### **Directories: Kebab-Case** (hyphens)
 - Boards: `boards/esp32-devkit/`, `boards/arduino-nano/`
-- Sketches: `sketches/blink-test/`, `sketches/sensor-read/`
+- Sketches: `sketches/blink-test/`, `sketches/ir-sensor-read/`
 
 ### **C/C++ Files: Snake_Case** (underscores)
 - Headers: `blink_config.h`, `sensor_config.h`
@@ -167,7 +167,7 @@ See [.github/skills/sketches/SKILL.md](.github/skills/sketches/SKILL.md)
 
 ### Example Sketches
 - [Blink Test (ESP32)](boards/esp32-devkit/sketches/blink-test/readme.md)
-- [Sensor Read (Arduino Nano)](boards/arduino-nano/sketches/sensor-read/readme.md)
+- [IR Sensor Read (Arduino Nano)](boards/arduino-nano/sketches/ir-sensor-read/readme.md)
 
 ---
 

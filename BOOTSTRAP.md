@@ -116,11 +116,11 @@ embedded-device-lab/
 21. ✅ `boards/arduino-nano/pin-layout.md` - Detailed GPIO mapping (20+ tables)
 22. ✅ `boards/arduino-nano/pin-layout.png` - Placeholder for visual pinout
 23. ✅ `boards/arduino-nano/docs/README.md` - Board specifications and resources
-24. ✅ `boards/arduino-nano/sketches/sensor-read/platformio.ini` - Sketch config
-25. ✅ `boards/arduino-nano/sketches/sensor-read/src/main.cpp` - ADC sensor reading firmware
-26. ✅ `boards/arduino-nano/sketches/sensor-read/include/sensor-config.h` - Pin definitions
-27. ✅ `boards/arduino-nano/sketches/sensor-read/dashboard/README.md` - Processing guide
-28. ✅ `boards/arduino-nano/sketches/sensor-read/readme.md` - Sketch documentation
+24. ✅ `boards/arduino-nano/sketches/ir-sensor-read/platformio.ini` - Sketch config
+25. ✅ `boards/arduino-nano/sketches/ir-sensor-read/src/main.cpp` - ADC sensor reading firmware
+26. ✅ `boards/arduino-nano/sketches/ir-sensor-read/include/sensor-config.h` - Pin definitions
+27. ✅ `boards/arduino-nano/sketches/ir-sensor-read/dashboard/README.md` - Processing guide
+28. ✅ `boards/arduino-nano/sketches/ir-sensor-read/readme.md` - Sketch documentation
 
 **Total Files Created: 28** ✓
 
@@ -340,7 +340,7 @@ Directory Structure:
 
 **Directories (Kebab-Case):**
 - Boards: `boards/esp32-devkit/`, `boards/arduino-nano/`
-- Sketches: `sketches/blink-test/`, `sketches/sensor-read/`
+- Sketches: `sketches/blink-test/`, `sketches/ir-sensor-read/`
 
 **C/C++ Files (Snake_Case - for Linux/UNIX compatibility):**
 - Headers: `blink_config.h`, `sensor_config.h`

@@ -716,7 +716,7 @@ processing dashboard.pde  # Opens Processing IDE
 ### 10.2 Commit to Repository
 
 ```bash
-git add boards/[board-name]/sketches/[sketch-name]/  # e.g., esp32-devkit/sketches/sensor-read/
+git add boards/[board-name]/sketches/[sketch-name]/  # e.g., esp32-devkit/sketches/ir-sensor-read/
 git commit -m "Add [sketch-name] sketch for [board-name]"
 ```
 

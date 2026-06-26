@@ -12,4 +12,10 @@
 // Timing Constants
 #define SENSOR_INTERVAL 1000  // Milliseconds between readings
 
+// Obstacle detection threshold for analog IR sensors.
+// If ADC >= threshold -> ACTIVE, else LOW.
+#ifndef OBSTACLE_THRESHOLD_ADC
+  #define OBSTACLE_THRESHOLD_ADC 500
+#endif
+
 #endif // SENSOR_CONFIG_H
