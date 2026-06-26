@@ -52,3 +52,19 @@ pio run --target upload
 # Monitor serial output
 pio device monitor --baud 9600
 ```
+
+## Dashboard Instructions
+
+- See [dashboard/README.md](dashboard/README.md) for setup and serial visualization details.
+
+
+### snapshots
+
+- LED ON
+  
+   ![LED ON](imgs/led-on.png)
+
+- LED OFF
+  
+   ![LED OFF](imgs/led-off.png)
+

@@ -56,3 +56,5 @@ ENV/
 # Compiled sketches
 *.cpp.o
 *.elf
+
+terminal-git.txt

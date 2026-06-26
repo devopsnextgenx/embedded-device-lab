@@ -31,3 +31,14 @@ LED ON
 LED OFF
 ```
 Parse these in Processing to drive the UI indicator.
+
+## snapshots
+
+- LED ON
+  
+   ![LED ON](imgs/led-on.png)
+
+- LED OFF
+  
+   ![LED OFF](imgs/led-off.png)
+
