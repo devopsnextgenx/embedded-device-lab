@@ -42,6 +42,7 @@ readonly UDEV_RULES_FILE="99-embedded-device-lab.rules"
 SELECTED_BOARD=""
 SELECTED_SKETCH=""
 SELECTED_BAUD_RATE=115200
+SKETCH_HAS_BEEN_BUILT=0
 
 #############################################################################
 # Utility Functions
@@ -338,6 +339,7 @@ select_board() {
   fi
   
   SELECTED_BOARD="${boards[$((board_choice - 1))]}"
+  SKETCH_HAS_BEEN_BUILT=0
   print_success "Selected board: ${SELECTED_BOARD}"
 }
 
@@ -371,6 +373,7 @@ select_sketch() {
   fi
   
   SELECTED_SKETCH="${sketches[$((sketch_choice - 1))]}"
+  SKETCH_HAS_BEEN_BUILT=0
   print_success "Selected sketch: ${SELECTED_SKETCH}"
 }
 
@@ -389,6 +392,8 @@ get_sketch_path() {
 # Build (compile) the selected sketch
 ##
 build_sketch() {
+  local skip_pause="${1:-0}"
+
   print_header "Building: ${SELECTED_BOARD}/${SELECTED_SKETCH}"
   
   local sketch_path=$(get_sketch_path)
@@ -398,12 +403,15 @@ build_sketch() {
   print_info "Running: pio run (in ${sketch_path})"
   if pio run; then
     print_success "Build completed successfully"
+    SKETCH_HAS_BEEN_BUILT=1
   else
     print_error "Build failed"
     return 1
   fi
   
-  press_continue
+  if [[ "${skip_pause}" != "1" ]]; then
+    press_continue
+  fi
 }
 
 ##
@@ -1006,7 +1014,12 @@ operations_menu() {
         build_sketch
         ;;
       2)
-        build_sketch && upload_sketch
+        if [[ "${SKETCH_HAS_BEEN_BUILT}" -eq 0 ]]; then
+          build_sketch 1
+        else
+          print_info "Skipping build because ${SELECTED_BOARD}/${SELECTED_SKETCH} was already built successfully"
+        fi
+        upload_sketch
         ;;
       3)
         open_monitor

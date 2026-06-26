@@ -5,7 +5,7 @@
 #include "shared_version_utils.h"
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(100);
 
   printSketchMetadata();

@@ -7,7 +7,7 @@
 #include "version.h"
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(1000); // Allow serial monitor to connect
 
   Serial.print("Sketch: ");
