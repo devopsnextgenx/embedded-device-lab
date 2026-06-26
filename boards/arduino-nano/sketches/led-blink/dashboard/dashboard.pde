@@ -23,6 +23,10 @@ final int INITIAL_W = 920;
 final int INITIAL_H = 620;
 
 final int LED_R = 80;
+final int LED_RING_COUNT = 4;
+final float LED_RING_SPEED = 0.003;      // 1/10th of previous 0.018 speed
+final float LED_RING_START_FACTOR = 0.53;
+final float LED_RING_END_FACTOR = 3.0;    // double previous 1.5 max radius factor
 
 final int PANEL_MARGIN = 20;
 final int PANEL_Y      = 70;
@@ -125,6 +129,24 @@ void drawLedIndicator() {
       float alpha = map(r, LED_R, LED_R + 40, 60, 0);
       fill(red(COL_LED_ON), green(COL_LED_ON), blue(COL_LED_ON), alpha);
       ellipse(ledCx, ledCy, r * 2, r * 2);
+    }
+
+    // Animated ring lines moving outward to 1.5x radius and fading out.
+    int ringCount = LED_RING_COUNT;
+    float minRingR = LED_R * LED_RING_START_FACTOR;
+    float maxRingR = LED_R * LED_RING_END_FACTOR;
+    float t = (frameCount * LED_RING_SPEED) % 1.0;
+
+    noFill();
+    for (int i = 0; i < ringCount; i++) {
+      float phase = (t + i / float(ringCount)) % 1.0;
+      float ringR = lerp(minRingR, maxRingR, phase);
+      float ringAlpha = lerp(140, 0, phase);
+      float ringWeight = lerp(2.6, 0.9, phase);
+
+      stroke(red(COL_LED_ON), green(COL_LED_ON), blue(COL_LED_ON), ringAlpha);
+      strokeWeight(ringWeight);
+      ellipse(ledCx, ledCy, ringR * 2, ringR * 2);
     }
 
     // Main circle — neon blue
