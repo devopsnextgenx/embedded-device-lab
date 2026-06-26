@@ -62,9 +62,9 @@ pio device monitor --baud 9600
 
 - LED ON
   
-   ![LED ON](imgs/led-on.png)
+   ![LED ON](dashboard/imgs/led-on.png)
 
 - LED OFF
   
-   ![LED OFF](imgs/led-off.png)
+   ![LED OFF](dashboard/imgs/led-off.png)
 
