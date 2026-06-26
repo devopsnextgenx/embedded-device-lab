@@ -1,172 +1,554 @@
-# Arduino Nano Board - Pin Layout & Documentation
+# Arduino Nano (ATmega328P) - Complete Hardware Reference
 
-## Board Overview
-**Name:** Arduino Nano v3.x (ATmega328P)  
-**Processor:** ATmega328P (8-bit AVR)  
-**Clock Speed:** 16 MHz  
-**RAM:** 2 KB SRAM  
-**Flash:** 32 KB (2 KB bootloader)  
-**EEPROM:** 1 KB  
-**GPIO Pins:** 22 (14 digital, 8 analog)  
-**PWM Pins:** 6 (D3, D5, D6, D9, D10, D11)  
-**ADC:** 10-bit, 8 channels (A0-A7)  
-**UART:** 1 (Serial)  
-**SPI:** Hardware (D10-D13)  
-**I2C:** 2 (SDA=A4, SCL=A5)  
-**Power Supply:** 5V USB or 5V/7-12V DC jack
+> Board: **Arduino Nano v3.x (ATmega328P)**
+>
+> This document serves as the complete hardware reference for the Arduino Nano used in this project.
 
 ---
 
-## Pin Mapping & Allocation
+# Board Specifications
 
-### **Power & Ground**
-| Pin    | Function     | Notes                                  |
-|--------|--------------|----------------------------------------|
-| VIN    | 5-12V Input  | Raw power input (regulated to 5V)      |
-| 5V     | 5V Rail      | Regulated 5V output (~500mA depending) |
-| 3V3    | 3.3V Rail    | Low-current 3.3V (for sensors, etc.)   |
-| GND    | Ground       | Common ground (multiple pins)          |
-| AREF   | Analog Ref   | External analog reference input        |
-
-### **Serial Communication (UART - Default)**
-| Pin | Signal | Function     | Notes                          |
-|-----|--------|--------------|--------------------------------|
-| RX  | D0     | UART Receive | Serial.begin(9600) by default  |
-| TX  | D1     | UART Transmit| Serial.print() output          |
-
-### **Digital GPIO (D0-D13)**
-| Pin | GPIO    | Alternate Function      | PWM | Notes                      |
-|-----|---------|-------------------------|-----|----------------------------|
-| D0  | PD0     | UART RX                 | No  | Serial receive             |
-| D1  | PD1     | UART TX                 | No  | Serial transmit            |
-| D2  | PD2     | INT0 (External IRQ)     | No  | Interrupt pin              |
-| D3  | PD3     | INT1, OC2B              | Yes | PWM, Interrupt             |
-| D4  | PD4     | XCK/T0                  | No  | Timer/counter              |
-| D5  | PD5     | OC0B                    | Yes | PWM                        |
-| D6  | PD6     | OC0A                    | Yes | PWM                        |
-| D7  | PD7     | AIN1                    | No  | Analog comparator          |
-| D8  | PB0     | ICP1, CLKO              | No  | Input capture / Oscillator |
-| D9  | PB1     | OC1A                    | Yes | PWM (16-bit Timer1)        |
-| D10 | PB2     | SS, OC1B                | Yes | PWM (SPI Chip Select)      |
-| D11 | PB3     | MOSI, OC2A              | Yes | PWM (SPI Master Out)       |
-| D12 | PB4     | MISO                    | No  | SPI Master In              |
-| D13 | PB5     | SCK, LED                | No  | SPI Clock (on-board LED)   |
-
-### **Analog Pins (A0-A7 / ADC Inputs)**
-| Pin | GPIO    | ADC Channel | 10-bit Range | Notes                    |
-|-----|---------|-------------|--------------|--------------------------|
-| A0  | PC0     | CH0         | 0-1023       | Standard analog input    |
-| A1  | PC1     | CH1         | 0-1023       | Standard analog input    |
-| A2  | PC2     | CH2         | 0-1023       | Standard analog input    |
-| A3  | PC3     | CH3         | 0-1023       | Standard analog input    |
-| A4  | PC4     | CH4, SDA    | 0-1023       | I2C Data (with pullup)   |
-| A5  | PC5     | CH5, SCL    | 0-1023       | I2C Clock (with pullup)  |
-| A6  | ADC6    | CH6         | 0-1023       | Analog-only (no digital) |
-| A7  | ADC7    | CH7         | 0-1023       | Analog-only (no digital) |
-
-### **SPI Pins (Hardware SPI)**
-| Pin | GPIO | Function | Notes                   |
-|-----|------|----------|-------------------------|
-| D13 | PB5  | SCK      | SPI Clock               |
-| D12 | PB4  | MISO     | SPI Master In (Data In) |
-| D11 | PB3  | MOSI     | SPI Master Out (Data)   |
-| D10 | PB2  | SS       | Slave Select (CS)       |
-
-### **I2C Pins (Hardware I2C / TWI)**
-| Pin | GPIO | Function | Pullup | Notes             |
-|-----|------|----------|--------|-------------------|
-| A4  | PC4  | SDA      | 4.7kΩ  | I2C Data          |
-| A5  | PC5  | SCL      | 4.7kΩ  | I2C Clock         |
-
-### **External Interrupt Pins**
-| Pin | GPIO | Interrupt | Notes                    |
-|-----|------|-----------|--------------------------|
-| D2  | PD2  | INT0      | attachInterrupt(0, ...)  |
-| D3  | PD3  | INT1      | attachInterrupt(1, ...)  |
+| Item                | Value                   |
+| ------------------- | ----------------------- |
+| MCU                 | ATmega328P              |
+| Architecture        | 8-bit AVR               |
+| Clock Speed         | 16 MHz                  |
+| Flash Memory        | 32 KB (2 KB bootloader) |
+| SRAM                | 2 KB                    |
+| EEPROM              | 1 KB                    |
+| Operating Voltage   | 5V                      |
+| Input Voltage (VIN) | 7V–12V recommended      |
+| Digital I/O Pins    | 14                      |
+| Analog Inputs       | 8                       |
+| PWM Outputs         | 6                       |
+| UART                | 1                       |
+| SPI                 | Hardware SPI            |
+| I2C                 | Hardware TWI            |
+| ADC Resolution      | 10-bit                  |
+| Analog Channels     | 8                       |
 
 ---
 
-## PWM & Timer Configuration
+# Physical Pin Layout
 
-### **PWM Pins (Analog Output)**
-| Pin  | Timer | Frequency | Resolution | Max Value |
-|------|-------|-----------|-------------|-----------|
-| D3   | Timer2| 490 Hz    | 8-bit      | 255       |
-| D5   | Timer0| 976 Hz    | 8-bit      | 255       |
-| D6   | Timer0| 976 Hz    | 8-bit      | 255       |
-| D9   | Timer1| 490 Hz    | 16-bit     | 65535     |
-| D10  | Timer1| 490 Hz    | 16-bit     | 65535     |
-| D11  | Timer2| 490 Hz    | 8-bit      | 255       |
+## Left Side Header (USB Connector Up)
 
-Use `analogWrite(pin, 0-255)` to control PWM duty cycle.
+| Physical Pin | Arduino Label | Port | Functions        | Notes                  |
+| ------------ | ------------- | ---- | ---------------- | ---------------------- |
+| 13           | D13           | PB5  | SCK              | Built-in LED           |
+| —            | 3V3           | —    | 3.3V Output      | ~50mA max              |
+| —            | AREF          | —    | Analog Reference | External ADC reference |
+| 14           | A0            | PC0  | ADC0             | Analog/Digital         |
+| 15           | A1            | PC1  | ADC1             | Analog/Digital         |
+| 16           | A2            | PC2  | ADC2             | Analog/Digital         |
+| 17           | A3            | PC3  | ADC3             | Analog/Digital         |
+| 18           | A4            | PC4  | ADC4, SDA        | I2C Data               |
+| 19           | A5            | PC5  | ADC5, SCL        | I2C Clock              |
+| 20           | A6            | ADC6 | Analog Only      | No digital I/O         |
+| 21           | A7            | ADC7 | Analog Only      | No digital I/O         |
+| —            | 5V            | —    | 5V Rail          | Regulated              |
+| —            | RST           | PC6  | Reset            | Active LOW             |
+| —            | GND           | —    | Ground           |                        |
+| —            | VIN           | —    | 7–12V Input      | Through regulator      |
+
+---
+
+## Right Side Header (USB Connector Up)
+
+| Physical Pin | Arduino Label | Port | Functions  | Notes           |
+| ------------ | ------------- | ---- | ---------- | --------------- |
+| 12           | D12           | PB4  | MISO       | SPI             |
+| 11           | D11           | PB3  | MOSI, OC2A | PWM             |
+| 10           | D10           | PB2  | SS, OC1B   | PWM             |
+| 9            | D9            | PB1  | OC1A       | PWM             |
+| 8            | D8            | PB0  | ICP1, CLKO |                 |
+| 7            | D7            | PD7  | AIN1       |                 |
+| 6            | D6            | PD6  | OC0A       | PWM             |
+| 5            | D5            | PD5  | OC0B       | PWM             |
+| 4            | D4            | PD4  | T0/XCK     |                 |
+| 3            | D3            | PD3  | INT1, OC2B | PWM + Interrupt |
+| 2            | D2            | PD2  | INT0       | Interrupt       |
+| 1            | D1            | PD1  | TXD        | UART TX         |
+| 0            | D0            | PD0  | RXD        | UART RX         |
+| —            | RST           | PC6  | Reset      |                 |
+| —            | GND           | —    | Ground     |                 |
+| —            | 5V            | —    | 5V Rail    |                 |
+
+---
+
+# Pin Capability Matrix
+
+| Pin | Digital | Analog | PWM | SPI  | I2C | UART | Interrupt |
+| --- | ------- | ------ | --- | ---- | --- | ---- | --------- |
+| D0  | ✓       |        |     |      |     | RX   |           |
+| D1  | ✓       |        |     |      |     | TX   |           |
+| D2  | ✓       |        |     |      |     |      | INT0      |
+| D3  | ✓       |        | ✓   |      |     |      | INT1      |
+| D4  | ✓       |        |     |      |     |      |           |
+| D5  | ✓       |        | ✓   |      |     |      |           |
+| D6  | ✓       |        | ✓   |      |     |      |           |
+| D7  | ✓       |        |     |      |     |      |           |
+| D8  | ✓       |        |     |      |     |      |           |
+| D9  | ✓       |        | ✓   |      |     |      |           |
+| D10 | ✓       |        | ✓   | SS   |     |      |           |
+| D11 | ✓       |        | ✓   | MOSI |     |      |           |
+| D12 | ✓       |        |     | MISO |     |      |           |
+| D13 | ✓       |        |     | SCK  |     |      |           |
+| A0  | ✓       | ✓      |     |      |     |      |           |
+| A1  | ✓       | ✓      |     |      |     |      |           |
+| A2  | ✓       | ✓      |     |      |     |      |           |
+| A3  | ✓       | ✓      |     |      |     |      |           |
+| A4  | ✓       | ✓      |     |      | SDA |      |           |
+| A5  | ✓       | ✓      |     |      | SCL |      |           |
+| A6  |         | ✓      |     |      |     |      |           |
+| A7  |         | ✓      |     |      |     |      |           |
+
+---
+
+# Digital GPIO
+
+All D0–D13 pins support digital input/output.
+
+```cpp
+pinMode(7, OUTPUT);
+digitalWrite(7, HIGH);
+
+pinMode(2, INPUT_PULLUP);
+int state = digitalRead(2);
+```
+
+## Limits
+
+| Parameter           | Value             |
+| ------------------- | ----------------- |
+| Max per pin         | 40mA absolute max |
+| Recommended per pin | <20mA             |
+| Total MCU current   | 200mA max         |
+
+---
+
+# PWM Outputs
+
+Arduino Nano supports PWM on six pins.
+
+| Pin | Timer   | Default Frequency |
+| --- | ------- | ----------------- |
+| D3  | Timer2B | ~490Hz            |
+| D5  | Timer0B | ~980Hz            |
+| D6  | Timer0A | ~980Hz            |
+| D9  | Timer1A | ~490Hz            |
+| D10 | Timer1B | ~490Hz            |
+| D11 | Timer2A | ~490Hz            |
+
+```cpp
+analogWrite(9, 128);
+```
+
+Produces approximately 50% duty cycle.
+
+## Timer Relationships
+
+| Timer  | Pins    |
+| ------ | ------- |
+| Timer0 | D5, D6  |
+| Timer1 | D9, D10 |
+| Timer2 | D3, D11 |
+
+### Important
+
+Changing timer frequency affects all pins sharing that timer.
+
+Example:
+
+* D9 frequency changes ⇒ D10 frequency changes
+* D3 frequency changes ⇒ D11 frequency changes
+
+### Timer0 Warning
+
+Timer0 drives:
+
+* millis()
+* micros()
+* delay()
+
+Modifying Timer0 can break timing functions.
+
+---
+
+# Analog Inputs
+
+ADC resolution is 10-bit.
+
+```cpp
+int raw = analogRead(A0);
+```
+
+Range:
+
+```text
+0 → 1023
+```
+
+Voltage calculation:
+
+```cpp
+float volts = raw * (5.0 / 1023.0);
+```
 
 ---
 
 ## Analog Reference Options
 
-By default, analog readings use **5V** as the reference (AREF pin internally connected via 100nF capacitor).
+```cpp
+analogReference(DEFAULT);
+analogReference(INTERNAL);
+analogReference(EXTERNAL);
+```
 
-Change reference with: `analogReference(DEFAULT | INTERNAL | EXTERNAL)`
+| Mode     | Voltage            |
+| -------- | ------------------ |
+| DEFAULT  | VCC (typically 5V) |
+| INTERNAL | 1.1V               |
+| EXTERNAL | AREF Pin           |
 
-- **DEFAULT (5V):** Uses VCC (5V on Nano)
-- **INTERNAL (1.1V):** Uses internal 1.1V reference (better for low-voltage sensors)
-- **EXTERNAL:** Uses external voltage on AREF pin (max 5V)
+### AREF Warning
+
+Never drive AREF externally while using:
+
+```cpp
+analogReference(DEFAULT);
+```
+
+This can short the internal reference network.
 
 ---
 
-## Common Peripheral Wiring
+# A6 / A7 Special Notes
 
-### **DHT Sensor (Temperature/Humidity)**
+A6 and A7 are:
+
+* Analog input only
+* No digital I/O
+* No pullups
+* Not usable with pinMode()
+
+Valid:
+
+```cpp
+analogRead(A6);
 ```
+
+Invalid:
+
+```cpp
+pinMode(A6, INPUT_PULLUP);
+digitalRead(A6);
+digitalWrite(A6, HIGH);
+```
+
+---
+
+# UART (Serial)
+
+| Pin | Function |
+| --- | -------- |
+| D0  | RX       |
+| D1  | TX       |
+
+```cpp
+Serial.begin(115200);
+Serial.println("Hello");
+```
+
+## Upload Conflict
+
+D0 and D1 are shared with:
+
+* CH340
+* FT232
+* USB serial interface
+
+Disconnect attached devices before uploading sketches.
+
+---
+
+# SPI Interface
+
+| Pin | Function |
+| --- | -------- |
+| D13 | SCK      |
+| D12 | MISO     |
+| D11 | MOSI     |
+| D10 | SS       |
+
+```cpp
+#include <SPI.h>
+
+SPI.begin();
+SPI.transfer(0x55);
+```
+
+## SPI Master Mode Requirement
+
+D10 should remain:
+
+```cpp
+pinMode(10, OUTPUT);
+```
+
+Otherwise SPI can unintentionally enter slave mode.
+
+---
+
+# I2C Interface
+
+| Pin | Function |
+| --- | -------- |
+| A4  | SDA      |
+| A5  | SCL      |
+
+```cpp
+#include <Wire.h>
+
+Wire.begin();
+```
+
+Typical pullups:
+
+```text
+4.7kΩ → 5V
+```
+
+Many sensor breakout boards already include pullups.
+
+---
+
+# External Interrupts
+
+Dedicated interrupt pins:
+
+| Pin | Interrupt |
+| --- | --------- |
+| D2  | INT0      |
+| D3  | INT1      |
+
+```cpp
+attachInterrupt(
+    digitalPinToInterrupt(2),
+    myISR,
+    FALLING
+);
+```
+
+Supported trigger modes:
+
+* LOW
+* CHANGE
+* RISING
+* FALLING
+
+---
+
+# Power Pins
+
+| Pin  | Function       |
+| ---- | -------------- |
+| VIN  | 7–12V input    |
+| 5V   | Regulated 5V   |
+| 3V3  | Regulated 3.3V |
+| GND  | Ground         |
+| AREF | ADC reference  |
+| RST  | Reset MCU      |
+
+---
+
+# Power Budget
+
+## USB Powered
+
+```text
+USB → 5V Rail
+```
+
+Available current typically:
+
+```text
+~500mA
+```
+
+depends on USB source.
+
+## VIN Powered
+
+```text
+VIN → Regulator → 5V Rail
+```
+
+Higher VIN voltage increases regulator heat.
+
+Recommended:
+
+```text
+7V–12V
+```
+
+Avoid powering motors directly from Nano 5V rail.
+
+---
+
+# Bootloader & Upload Considerations
+
+## D0 / D1
+
+Devices connected to UART pins can block uploads.
+
+## D13
+
+Bootloader flashes onboard LED during reset.
+
+Avoid connecting:
+
+* Relay inputs
+* MOSFET gates
+* Critical enable signals
+
+to D13 if startup glitches matter.
+
+## RST
+
+Holding RESET low prevents execution and uploading.
+
+---
+
+# Common Wiring Examples
+
+## DHT22 / DHT11
+
+```text
 DHT GND  → Nano GND
 DHT VCC  → Nano 5V
-DHT DATA → Nano D4 (or any GPIO)
-         + 10kΩ pull-up to 5V (or internal via pinMode)
-```
+DHT DATA → D4
 
-### **OLED Display (I2C SSD1306)**
-```
-OLED GND  → Nano GND
-OLED VCC  → Nano 5V
-OLED SDA  → Nano A4 (I2C Data)
-OLED SCL  → Nano A5 (I2C Clock)
-```
-
-### **DC Motor with L298N Driver**
-```
-Motor GND       → Nano GND
-Motor VCC       → Nano 5V
-Motor IN1       → Nano D5 (PWM for speed)
-Motor IN2       → Nano D6 (PWM for direction)
-Motor OUT1/OUT2 → Motor leads
-```
-
-### **Relay Module (5V)**
-```
-Relay GND    → Nano GND
-Relay VCC    → Nano 5V
-Relay Signal → Nano D8 (with 1kΩ resistor if needed)
-Relay COM    → 5V supply
-Relay NO     → Load positive
-Relay GND    → Load negative (returns to Nano GND)
-```
-
-### **Potentiometer (Variable Resistor)**
-```
-Pot GND    → Nano GND
-Pot Wiper  → Nano A0 (or A1-A7)
-Pot VCC    → Nano 5V
+10kΩ pullup between DATA and 5V
 ```
 
 ---
 
-## Developer Notes
+## SSD1306 OLED (I2C)
 
-1. **Power Budget:** The on-board 5V regulator can supply ~500mA total. Monitor current draw if powering sensors directly.
-2. **Memory:** Total 2KB RAM. Use `F()` macro for string literals to conserve SRAM: `Serial.println(F("text"))`.
-3. **Serial Baud Rate:** Default 9600. Can be changed with `Serial.begin(115200)`, but monitor speed must match.
-4. **Voltage Divider:** For 5V sensors reading 3.3V signals, use a voltage divider on analog pins to scale input.
-5. **USB Driver:** Nano uses CH340G USB bridge (older) or FT232RL (newer). Drivers may be required on Windows.
-6. **EEPROM:** 1024 bytes available via `EEPROM.write()` and `EEPROM.read()`. Useful for persistent settings.
+```text
+OLED GND → GND
+OLED VCC → 5V
+OLED SDA → A4
+OLED SCL → A5
+```
 
-See `pin-layout.png` for a visual schematic of all pin locations.
+---
+
+## Potentiometer
+
+```text
+GND      → GND
+Center   → A0
+5V       → 5V
+```
+
+---
+
+## Relay Module
+
+```text
+Relay GND → GND
+Relay VCC → 5V
+Relay IN  → D8
+```
+
+---
+
+## L298N Motor Driver
+
+```text
+Nano D5  → IN1
+Nano D6  → IN2
+
+Motor → OUT1/OUT2
+```
+
+> Do not power motors directly from the Nano.
+
+---
+
+# Memory Optimization Tips
+
+## SRAM Conservation
+
+Use flash-stored strings:
+
+```cpp
+Serial.println(F("System Ready"));
+```
+
+instead of:
+
+```cpp
+Serial.println("System Ready");
+```
+
+This saves SRAM.
+
+---
+
+# EEPROM
+
+Available:
+
+```text
+1024 bytes
+```
+
+Example:
+
+```cpp
+#include <EEPROM.h>
+
+EEPROM.write(0, 123);
+byte value = EEPROM.read(0);
+```
+
+Useful for:
+
+* Calibration values
+* Configuration settings
+* Persistent parameters
+
+---
+
+# USB Interface
+
+Most Nano boards use:
+
+* CH340G
+* FT232RL
+
+Windows may require drivers.
+
+---
+
+# Quick Reference Summary
+
+| Function            | Pins                     |
+| ------------------- | ------------------------ |
+| UART                | D0, D1                   |
+| External Interrupts | D2, D3                   |
+| PWM                 | D3, D5, D6, D9, D10, D11 |
+| SPI                 | D10–D13                  |
+| I2C                 | A4, A5                   |
+| Analog Inputs       | A0–A7                    |
+| Analog Only         | A6, A7                   |
+| Built-in LED        | D13                      |
+| Reset               | RST                      |
+| Analog Reference    | AREF                     |
+
+---
+
+**Project Note:** If using communication modules (GPS, Bluetooth, LoRa, GSM, ESP8266, etc.), avoid D0/D1 unless hardware UART is specifically required. Prefer SoftwareSerial or AltSoftSerial on other pins to prevent upload conflicts.

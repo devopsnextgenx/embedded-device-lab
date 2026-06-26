@@ -1,143 +1,625 @@
-# ESP32 DevKit Board - Pin Layout & Documentation
+# ESP32 DevKit V1 (ESP32-WROOM-32) - Complete Hardware Reference
 
-## Board Overview
-**Name:** ESP32-DOIT DevKit v1  
-**Processor:** Xtensa dual-core 32-bit LX6 microprocessor  
-**Clock Speed:** 160 MHz (adjustable to 240 MHz)  
-**RAM:** 520 KB SRAM  
-**Flash:** 4 MB (partitionable)  
-**GPIO Pins:** 34 (input only on some), 25 (input/output)  
-**ADC:** 12-bit, 18 channels  
-**DAC:** 2 channels (8-bit)  
-**UART:** 3 (UART0, UART1, UART2)  
-**SPI:** 4 (SPI0, SPI1, SPI2, SPI3)  
-**I2C:** 2 (configurable on any GPIO)  
-**Power Supply:** 5V USB or 3.3V direct
+> Board: **ESP32 DOIT DevKit V1**
+>
+> This document serves as the complete hardware reference for the ESP32 board used in this project.
 
 ---
 
-## Pin Mapping & Allocation
+# Board Specifications
 
-### **Power & Ground**
-| Pin | Function     | Notes                            |
-|-----|--------------|----------------------------------|
-| VIN | 5V Input     | USB power input (5V)             |
-| 3V3 | 3.3V Rail    | Regulated 3.3V output (~500mA)  |
-| GND | Ground       | Common ground (multiple pins)   |
-
-### **Serial Communication (UART0 - Default)**
-| Pin | Signal | Function                    | Notes                               |
-|-----|--------|-----------------------------|------------------------------------|
-| RX0 | GPIO3  | UART0 Receive               | Connected to USB bridge (RX)        |
-| TX0 | GPIO1  | UART0 Transmit              | Connected to USB bridge (TX)        |
-
-### **General Purpose GPIO (Input/Output)**
-| Pin | GPIO   | Alternate Function | ADC/DAC    | Notes                                      |
-|-----|--------|-------------------|------------|---------------------------------------------|
-| D0  | GPIO16 | RTC GPIO0         | None       | Strapping pin (pull-down at boot)         |
-| D1  | GPIO17 | RTC GPIO1         | None       | High impedance - use carefully            |
-| D2  | GPIO4  | RTC GPIO4         | ADC2_CH0   | Strapping pin (pull-down at boot)         |
-| D3  | GPIO0  | RTC GPIO11        | ADC2_CH1   | Strapping pin (must be floating at boot)  |
-| D4  | GPIO2  | RTC GPIO12        | ADC2_CH2   | Strapping pin (must be floating at boot)  |
-| D5  | GPIO14 | RTC GPIO16        | ADC2_CH6   | Output-only on ESP32-DOIT                 |
-| D6  | GPIO27 | RTC GPIO17        | ADC2_CH7   | Standard GPIO                             |
-| D7  | GPIO26 | RTC GPIO18        | ADC2_CH9   | Standard GPIO                             |
-| D8  | GPIO25 | RTC GPIO8         | ADC2_CH8   | Standard GPIO (DAC1)                      |
-| D9  | GPIO32 | RTC GPIO9         | ADC1_CH4   | Standard GPIO (INPUT_ONLY on variant)    |
-| D10 | GPIO33 | RTC GPIO10        | ADC1_CH5   | Standard GPIO (INPUT_ONLY on variant)    |
-| D11 | GPIO34 | RTC GPIO4         | ADC1_CH6   | INPUT-ONLY, no internal pull-up           |
-| D12 | GPIO35 | RTC GPIO5         | ADC1_CH7   | INPUT-ONLY, no internal pull-up           |
-| D13 | GPIO36 | RTC GPIO0         | ADC1_CH0   | INPUT-ONLY (SensorVP)                     |
-| D14 | GPIO39 | RTC GPIO3         | ADC1_CH3   | INPUT-ONLY (SensorVN)                     |
-
-### **SPI Pins (for SD Card, Flash memory, etc.)**
-| Pin | GPIO   | Function | Notes              |
-|-----|--------|----------|---------------------|
-| D23 | GPIO23 | MOSI     | SPI Master Out      |
-| D19 | GPIO19 | MISO     | SPI Master In       |
-| D18 | GPIO18 | SCK      | SPI Clock           |
-| D5  | GPIO5  | CS0      | Chip Select (SPI)   |
-
-### **I2C Pins (Default)**
-| Pin | GPIO   | Function | Notes                       |
-|-----|--------|----------|------------------------------|
-| D21 | GPIO21 | SDA      | I2C Data (pullup inside)    |
-| D22 | GPIO22 | SCL      | I2C Clock (pullup inside)   |
-
-### **Analog Pins (ADC1 & ADC2)**
-| ADC1 Channels | GPIO   | ADC2 Channels | GPIO   |
-|---------------|--------|---------------|--------|
-| CH0 (VP)      | GPIO36 | CH0           | GPIO4  |
-| CH1 (VN)      | GPIO39 | CH1           | GPIO0  |
-| CH2           | GPIO34 | CH2           | GPIO2  |
-| CH3           | GPIO35 | CH3           | GPIO15 |
-| CH4           | GPIO32 | CH4           | GPIO13 |
-| CH5           | GPIO33 | CH5           | GPIO12 |
-| CH6           | GPIO34 | CH6           | GPIO14 |
-| CH7           | GPIO35 | CH7           | GPIO27 |
-|               |        | CH8           | GPIO25 |
-|               |        | CH9           | GPIO26 |
+| Item                      | Value                |
+| ------------------------- | -------------------- |
+| MCU                       | ESP32-WROOM-32       |
+| CPU                       | Xtensa LX6 Dual-Core |
+| Architecture              | 32-bit               |
+| Clock Speed               | Up to 240 MHz        |
+| SRAM                      | 520 KB               |
+| Flash                     | Typically 4 MB       |
+| Operating Voltage         | 3.3V                 |
+| Input Voltage             | 5V USB or VIN        |
+| GPIO Pins                 | 34                   |
+| ADC Resolution            | 12-bit               |
+| ADC Channels              | 18                   |
+| DAC Channels              | 2                    |
+| Capacitive Touch Channels | 10                   |
+| UARTs                     | 3                    |
+| SPI Controllers           | 4                    |
+| I2C Controllers           | 2                    |
+| WiFi                      | 802.11 b/g/n         |
+| Bluetooth                 | BT Classic + BLE     |
 
 ---
 
-## Special Pin Behavior
+# Physical Pin Layout
 
-### **Strapping Pins (Pull-Down at Boot)**
-Pins GPIO0, GPIO2, GPIO4, GPIO5, GPIO15, GPIO16 are sampled at boot to configure boot mode:
-- Keep floating or externally pulled high during normal operation
-- Avoid driving to GND during power-on or reset
+## Left Side Header (USB Connector Up)
 
-### **ADC2 Channel Conflict**
-When WiFi is active, ADC2 channels are **unavailable**. Use ADC1 for WiFi applications.
-
-### **I2C Flexibility**
-I2C can be configured on **any GPIO pair** via software I2C. Default is GPIO21 (SDA) and GPIO22 (SCL).
-
-### **RTC & Deep Sleep**
-RTC GPIOs (GPIO0, GPIO2, GPIO4, GPIO12-16, GPIO25-26) support deep-sleep wake-up via `esp_sleep_enable_ext1_wakeup()`.
-
----
-
-## Common Peripheral Wiring
-
-### **DHT Sensor (Temperature/Humidity)**
-```
-DHT GND  → ESP32 GND
-DHT VCC  → ESP32 3V3
-DHT DATA → ESP32 GPIO23 (or any GPIO)
-         + 10kΩ pull-up to VCC (optional, sensor has internal)
-```
-
-### **OLED Display (I2C SSD1306)**
-```
-OLED GND  → ESP32 GND
-OLED VCC  → ESP32 3V3
-OLED SDA  → ESP32 GPIO21 (I2C)
-OLED SCL  → ESP32 GPIO22 (I2C)
-```
-
-### **Relay Module (5V)**
-```
-Relay GND    → ESP32 GND
-Relay VCC    → ESP32 5V
-Relay Signal → ESP32 GPIO18 (through 1kΩ resistor if needed)
-```
-
-### **DS18B20 Temperature Sensor (OneWire)**
-```
-DS18B20 GND  → ESP32 GND
-DS18B20 VCC  → ESP32 3V3
-DS18B20 DQ   → ESP32 GPIO4
-             + 4.7kΩ pull-up to 3V3
-```
+| Pin    | GPIO   | Functions                   |
+| ------ | ------ | --------------------------- |
+| 3V3    | —      | 3.3V Output                 |
+| EN     | —      | Chip Enable / Reset         |
+| VP     | GPIO36 | ADC1_CH0, Input Only        |
+| VN     | GPIO39 | ADC1_CH3, Input Only        |
+| GPIO34 | GPIO34 | ADC1_CH6, Input Only        |
+| GPIO35 | GPIO35 | ADC1_CH7, Input Only        |
+| GPIO32 | GPIO32 | ADC1_CH4, Touch9            |
+| GPIO33 | GPIO33 | ADC1_CH5, Touch8            |
+| GPIO25 | GPIO25 | ADC2_CH8, DAC2              |
+| GPIO26 | GPIO26 | ADC2_CH9, DAC1              |
+| GPIO27 | GPIO27 | ADC2_CH7, Touch7            |
+| GPIO14 | GPIO14 | ADC2_CH6, Touch6            |
+| GPIO12 | GPIO12 | ADC2_CH5, Touch5, Strapping |
+| GND    | —      | Ground                      |
+| GPIO13 | GPIO13 | ADC2_CH4, Touch4            |
+| VIN    | —      | 5V Input                    |
 
 ---
 
-## Developer Notes
+## Right Side Header (USB Connector Up)
 
-1. **Power Budget:** The on-board 3.3V regulator can supply ~500mA. For high-current applications (sensors, motors), use external 3.3V supply.
-2. **USB Connection:** The DevKit includes a built-in USB-to-UART bridge (CH340 or CP2102 depending on batch). Drivers may be needed on Windows.
-3. **Voltage Levels:** ESP32 GPIO is 3.3V. For 5V sensors, use a level shifter or voltage divider.
-4. **ADC Resolution:** Default 12-bit (4096 levels). Calibration may be needed for precision measurements.
+| Pin    | GPIO   | Functions                   |
+| ------ | ------ | --------------------------- |
+| GPIO23 | GPIO23 | VSPI MOSI                   |
+| GPIO22 | GPIO22 | I2C SCL                     |
+| GPIO1  | GPIO1  | UART0 TX                    |
+| GPIO3  | GPIO3  | UART0 RX                    |
+| GPIO21 | GPIO21 | I2C SDA                     |
+| GPIO19 | GPIO19 | VSPI MISO                   |
+| GPIO18 | GPIO18 | VSPI SCK                    |
+| GPIO5  | GPIO5  | VSPI CS, Strapping          |
+| GPIO17 | GPIO17 | UART2 TX                    |
+| GPIO16 | GPIO16 | UART2 RX                    |
+| GPIO4  | GPIO4  | ADC2_CH0, Touch0            |
+| GPIO0  | GPIO0  | ADC2_CH1, Touch1, BOOT      |
+| GPIO2  | GPIO2  | ADC2_CH2, Touch2, Strapping |
+| GPIO15 | GPIO15 | ADC2_CH3, Touch3, Strapping |
+| GND    | —      | Ground                      |
+| 5V/VIN | —      | USB 5V Rail                 |
 
-See `pin-layout.png` for a visual schematic of all pin locations.
+---
+
+# GPIO Capability Matrix
+
+| GPIO | Digital I/O | ADC  | DAC  | Touch | PWM | RTC | Notes               |
+| ---- | ----------- | ---- | ---- | ----- | --- | --- | ------------------- |
+| 0    | ✓           | ADC2 |      | T1    | ✓   | ✓   | Boot pin            |
+| 1    | ✓           |      |      |       | ✓   |     | UART0 TX            |
+| 2    | ✓           | ADC2 |      | T2    | ✓   | ✓   | Strapping pin       |
+| 3    | ✓           |      |      |       | ✓   |     | UART0 RX            |
+| 4    | ✓           | ADC2 |      | T0    | ✓   | ✓   | Strapping pin       |
+| 5    | ✓           |      |      |       | ✓   |     | Strapping pin       |
+| 12   | ✓           | ADC2 |      | T5    | ✓   | ✓   | Flash voltage strap |
+| 13   | ✓           | ADC2 |      | T4    | ✓   | ✓   |                     |
+| 14   | ✓           | ADC2 |      | T6    | ✓   | ✓   |                     |
+| 15   | ✓           | ADC2 |      | T3    | ✓   | ✓   | Strapping pin       |
+| 16   | ✓           |      |      |       | ✓   |     |                     |
+| 17   | ✓           |      |      |       | ✓   |     |                     |
+| 18   | ✓           |      |      |       | ✓   |     | VSPI CLK            |
+| 19   | ✓           |      |      |       | ✓   |     | VSPI MISO           |
+| 21   | ✓           |      |      |       | ✓   |     | I2C SDA             |
+| 22   | ✓           |      |      |       | ✓   |     | I2C SCL             |
+| 23   | ✓           |      |      |       | ✓   |     | VSPI MOSI           |
+| 25   | ✓           | ADC2 | DAC2 |       | ✓   | ✓   |                     |
+| 26   | ✓           | ADC2 | DAC1 |       | ✓   | ✓   |                     |
+| 27   | ✓           | ADC2 |      | T7    | ✓   | ✓   |                     |
+| 32   | ✓           | ADC1 |      | T9    | ✓   | ✓   |                     |
+| 33   | ✓           | ADC1 |      | T8    | ✓   | ✓   |                     |
+| 34   | Input Only  | ADC1 |      |       |     | ✓   | No pullups          |
+| 35   | Input Only  | ADC1 |      |       |     | ✓   | No pullups          |
+| 36   | Input Only  | ADC1 |      |       |     | ✓   | VP                  |
+| 39   | Input Only  | ADC1 |      |       |     | ✓   | VN                  |
+
+---
+
+# Recommended GPIO Usage
+
+## Safe GPIOs (General Purpose)
+
+These are the preferred GPIOs for most projects:
+
+```text
+GPIO13
+GPIO14
+GPIO16
+GPIO17
+GPIO18
+GPIO19
+GPIO21
+GPIO22
+GPIO23
+GPIO25
+GPIO26
+GPIO27
+GPIO32
+GPIO33
+```
+
+---
+
+## Use With Care
+
+```text
+GPIO0
+GPIO2
+GPIO4
+GPIO5
+GPIO12
+GPIO15
+```
+
+These are boot-strapping pins and may prevent startup if driven incorrectly.
+
+---
+
+## Avoid for General Use
+
+```text
+GPIO1
+GPIO3
+```
+
+Shared with USB serial.
+
+---
+
+## Never Use
+
+```text
+GPIO6
+GPIO7
+GPIO8
+GPIO9
+GPIO10
+GPIO11
+```
+
+Connected to onboard SPI Flash.
+
+---
+
+# PWM (LEDC)
+
+Unlike Arduino, ESP32 PWM can be assigned to almost any output GPIO.
+
+## Features
+
+| Property   | Value         |
+| ---------- | ------------- |
+| Channels   | 16            |
+| Resolution | 1–16 bit      |
+| Frequency  | Up to ~40 MHz |
+| API        | ledcWrite()   |
+
+Example:
+
+```cpp
+ledcAttachPin(18, 0);
+ledcSetup(0, 5000, 8);
+
+ledcWrite(0, 128);
+```
+
+---
+
+# Analog Inputs (ADC)
+
+Resolution:
+
+```cpp
+analogReadResolution(12);
+```
+
+Range:
+
+```text
+0 – 4095
+```
+
+Default reference:
+
+```text
+0V – 3.3V
+```
+
+---
+
+## ADC1 (WiFi Safe)
+
+Use these pins when WiFi is enabled.
+
+| GPIO |
+| ---- |
+| 32   |
+| 33   |
+| 34   |
+| 35   |
+| 36   |
+| 39   |
+
+---
+
+## ADC2 (WiFi Conflict)
+
+Unavailable while WiFi is active.
+
+| GPIO |
+| ---- |
+| 0    |
+| 2    |
+| 4    |
+| 12   |
+| 13   |
+| 14   |
+| 15   |
+| 25   |
+| 26   |
+| 27   |
+
+---
+
+## ADC Accuracy Notes
+
+ESP32 ADCs are not perfectly linear.
+
+Most accurate range:
+
+```text
+0.15V – 3.0V
+```
+
+Use:
+
+```cpp
+esp_adc_cal
+```
+
+for calibrated readings.
+
+---
+
+# DAC Outputs
+
+ESP32 includes two true analog outputs.
+
+| GPIO | DAC  |
+| ---- | ---- |
+| 25   | DAC2 |
+| 26   | DAC1 |
+
+Example:
+
+```cpp
+dacWrite(25, 128);
+```
+
+Range:
+
+```text
+0 – 255
+```
+
+Output:
+
+```text
+0V – 3.3V
+```
+
+---
+
+# Capacitive Touch Inputs
+
+| Touch Channel | GPIO   |
+| ------------- | ------ |
+| T0            | GPIO4  |
+| T1            | GPIO0  |
+| T2            | GPIO2  |
+| T3            | GPIO15 |
+| T4            | GPIO13 |
+| T5            | GPIO12 |
+| T6            | GPIO14 |
+| T7            | GPIO27 |
+| T8            | GPIO33 |
+| T9            | GPIO32 |
+
+Example:
+
+```cpp
+touchRead(GPIO4);
+```
+
+Lower values indicate a touch event.
+
+---
+
+# UART Interfaces
+
+## UART0
+
+| GPIO | Function |
+| ---- | -------- |
+| 1    | TX0      |
+| 3    | RX0      |
+
+Used by USB serial and bootloader.
+
+---
+
+## UART1
+
+Default pins overlap flash and are generally remapped.
+
+---
+
+## UART2
+
+| GPIO | Function |
+| ---- | -------- |
+| 17   | TX2      |
+| 16   | RX2      |
+
+Recommended for GPS, GSM, LoRa, Bluetooth modules.
+
+---
+
+# SPI Interfaces
+
+## VSPI (Recommended)
+
+| GPIO | Function |
+| ---- | -------- |
+| 23   | MOSI     |
+| 19   | MISO     |
+| 18   | CLK      |
+| 5    | CS       |
+
+---
+
+## HSPI
+
+| GPIO | Function |
+| ---- | -------- |
+| 13   | MOSI     |
+| 12   | MISO     |
+| 14   | CLK      |
+| 15   | CS       |
+
+---
+
+# I2C Interface
+
+Default configuration:
+
+| GPIO | Function |
+| ---- | -------- |
+| 21   | SDA      |
+| 22   | SCL      |
+
+Example:
+
+```cpp
+Wire.begin(21, 22);
+```
+
+I2C can be remapped to other GPIOs if required.
+
+---
+
+# Deep Sleep & RTC GPIOs
+
+RTC-capable GPIOs:
+
+```text
+0
+2
+4
+12
+13
+14
+15
+25
+26
+27
+32
+33
+34
+35
+36
+39
+```
+
+Used with:
+
+```cpp
+esp_sleep_enable_ext0_wakeup()
+esp_sleep_enable_ext1_wakeup()
+```
+
+for ultra-low-power applications.
+
+---
+
+# Boot & Strapping Pins
+
+These GPIOs are sampled during reset.
+
+| GPIO | Purpose                 |
+| ---- | ----------------------- |
+| 0    | Bootloader selection    |
+| 2    | Boot mode               |
+| 5    | SPI boot config         |
+| 12   | Flash voltage selection |
+| 15   | Boot logging            |
+
+Improper states during reset can prevent booting.
+
+---
+
+# Power Considerations
+
+## Logic Levels
+
+```text
+3.3V ONLY
+```
+
+GPIOs are not 5V tolerant.
+
+---
+
+## Current Limits
+
+Recommended:
+
+```text
+<12mA per GPIO
+```
+
+Absolute maximum:
+
+```text
+40mA
+```
+
+---
+
+## External Loads
+
+Never power:
+
+* Motors
+* Relays
+* Solenoids
+* LED strips
+
+directly from GPIO pins.
+
+Use drivers, MOSFETs, or external power supplies.
+
+---
+
+# Common Wiring Examples
+
+## SSD1306 OLED
+
+```text
+OLED SDA → GPIO21
+OLED SCL → GPIO22
+OLED VCC → 3V3
+OLED GND → GND
+```
+
+---
+
+## DHT22
+
+```text
+DHT DATA → GPIO23
+DHT VCC  → 3V3
+DHT GND  → GND
+```
+
+---
+
+## DS18B20
+
+```text
+DQ → GPIO4
+
+4.7kΩ pullup:
+DQ → 3V3
+```
+
+---
+
+## SPI SD Card
+
+```text
+MOSI → GPIO23
+MISO → GPIO19
+CLK  → GPIO18
+CS   → GPIO5
+```
+
+---
+
+## Relay Module
+
+```text
+Relay IN  → GPIO18
+Relay VCC → 5V
+Relay GND → GND
+```
+
+Use a transistor driver or optocoupled relay board.
+
+---
+
+# Memory Optimization
+
+## Store Constants in Flash
+
+```cpp
+const char* msg = "Hello";
+```
+
+Prefer:
+
+```cpp
+constexpr char msg[] = "Hello";
+```
+
+for compile-time storage.
+
+---
+
+# Performance Notes
+
+## CPU Frequency
+
+```cpp
+setCpuFrequencyMhz(240);
+```
+
+Supported:
+
+```text
+80 MHz
+160 MHz
+240 MHz
+```
+
+---
+
+# USB Interface
+
+Most boards use:
+
+* CP2102
+* CH340
+
+Windows users may need drivers.
+
+---
+
+# Quick Reference Summary
+
+| Function       | GPIOs                                     |
+| -------------- | ----------------------------------------- |
+| UART0          | 1, 3                                      |
+| UART2          | 16, 17                                    |
+| I2C            | 21, 22                                    |
+| VSPI           | 18, 19, 23, 5                             |
+| HSPI           | 12, 13, 14, 15                            |
+| DAC            | 25, 26                                    |
+| ADC1           | 32–39                                     |
+| ADC2           | 0,2,4,12–15,25–27                         |
+| Touch          | 0,2,4,12–15,27,32,33                      |
+| Safe GPIOs     | 13,14,16,17,18,19,21,22,23,25,26,27,32,33 |
+| Input Only     | 34,35,36,39                               |
+| Flash Reserved | 6–11                                      |
+| Boot Pins      | 0,2,5,12,15                               |
+
+---
+
+**Project Note:** For sensors and peripherals, prefer GPIO21/22 (I2C), GPIO18/19/23 (SPI), GPIO16/17 (UART2), and GPIO32/33 (ADC1) to avoid boot, WiFi, and flash conflicts.
