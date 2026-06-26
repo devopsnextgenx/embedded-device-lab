@@ -2,17 +2,7 @@
 #include "MotorControl.h"
 #include "MotorPins.h"
 #include "version.h"
-
-static void printSketchMetadata() {
-  Serial.print(F("Sketch: "));
-  Serial.println(SKETCH_NAME);
-  Serial.print(F("Version: "));
-  Serial.println(SKETCH_VERSION);
-  Serial.print(F("Author: "));
-  Serial.println(SKETCH_AUTHOR);
-  Serial.print(F("Date: "));
-  Serial.println(SKETCH_DATE);
-}
+#include "shared_version_utils.h"
 
 void setup() {
   Serial.begin(115200);

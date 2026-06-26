@@ -5,21 +5,10 @@
 #include <Arduino.h>
 #include "blink_config.h"
 #include "version.h"
+#include "shared_version_utils.h"
 
 const unsigned long METADATA_INTERVAL_MS = 10000;
 unsigned long lastMetadataMs = 0;
-
-void printSketchMetadata() {
-  // Sketch identity lines parsed by the dashboard
-  Serial.print("Sketch: ");
-  Serial.println(SKETCH_NAME);
-  Serial.print("Version: ");
-  Serial.println(SKETCH_VERSION);
-  Serial.print("Author: ");
-  Serial.println(SKETCH_AUTHOR);
-  Serial.print("Date: ");
-  Serial.println(SKETCH_DATE);
-}
 
 void setup() {
   Serial.begin(9600);
