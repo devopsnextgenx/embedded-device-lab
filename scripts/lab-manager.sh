@@ -13,6 +13,7 @@
 # Features:
 #   - Dynamic board and sketch discovery
 #   - Interactive build/upload/monitor workflow
+#   - PlatformIO dependency download repair across all sketches
 #   - Hardware diagnostics and USB permission fixing
 #   - udev rules generation and installation
 #   - Robust error handling and logging
@@ -159,6 +160,109 @@ get_serial_devices() {
       fi
       ;;
   esac
+}
+
+##
+# Return all sketch directories containing a platformio.ini
+##
+get_all_sketch_paths() {
+  find "${BOARDS_DIR}" -type f -path "*/sketches/*/platformio.ini" -print 2>/dev/null | while IFS= read -r ini; do
+    dirname "${ini}"
+  done
+}
+
+##
+# Validate core PlatformIO package integrity and remove known corrupted folders
+##
+repair_corrupted_platformio_packages() {
+  local pio_core_dir="${PLATFORMIO_CORE_DIR:-${HOME}/.platformio}"
+  local repaired=0
+
+  local esp32_framework="${pio_core_dir}/packages/framework-arduinoespressif32"
+  if [[ -d "${esp32_framework}" && ! -d "${esp32_framework}/variants" ]]; then
+    print_warning "Detected corrupted ESP32 framework package (missing variants): ${esp32_framework}"
+    print_info "Removing corrupted package so PlatformIO can re-download it..."
+    rm -rf "${esp32_framework}" && repaired=1
+  fi
+
+  if [[ ${repaired} -eq 1 ]]; then
+    print_success "Corrupted package(s) removed"
+  else
+    print_info "No known corrupted core package patterns detected"
+  fi
+}
+
+##
+# Install dependencies for a sketch with retries
+# Arguments: sketch_path
+##
+install_sketch_packages_with_retry() {
+  local sketch_path="$1"
+  local attempts=3
+  local attempt
+
+  for attempt in $(seq 1 "${attempts}"); do
+    print_info "[${attempt}/${attempts}] Installing packages in ${sketch_path}"
+    if (cd "${sketch_path}" && pio pkg install); then
+      return 0
+    fi
+    print_warning "Package install failed for ${sketch_path} (attempt ${attempt}/${attempts})"
+  done
+
+  return 1
+}
+
+##
+# Repair PlatformIO download issues for all boards/sketches
+##
+repair_platformio_downloads() {
+  print_header "Repair PlatformIO Package Downloads"
+
+  print_info "This will validate package integrity and pre-install dependencies for all sketches."
+  echo -e "${MAGENTA}Continue? (y/n): ${NC}" | tr -d '\n'
+  read -r confirm
+  if [[ ! "${confirm}" =~ ^[Yy]$ ]]; then
+    print_warning "Repair cancelled"
+    press_continue
+    return
+  fi
+
+  check_platformio
+  repair_corrupted_platformio_packages
+
+  local sketch_paths=()
+  mapfile -t sketch_paths < <(get_all_sketch_paths)
+
+  if [[ ${#sketch_paths[@]} -eq 0 ]]; then
+    print_error "No sketches found under ${BOARDS_DIR}"
+    press_continue
+    return 1
+  fi
+
+  local success_count=0
+  local failure_count=0
+
+  for sketch_path in "${sketch_paths[@]}"; do
+    if install_sketch_packages_with_retry "${sketch_path}"; then
+      ((success_count++))
+      print_success "Dependencies ready: ${sketch_path}"
+    else
+      ((failure_count++))
+      print_error "Dependency install failed after retries: ${sketch_path}"
+    fi
+  done
+
+  echo ""
+  print_header "Repair Summary"
+  print_success "Successful sketches: ${success_count}"
+  if [[ ${failure_count} -gt 0 ]]; then
+    print_error "Failed sketches: ${failure_count}"
+    print_info "Tip: rerun this operation or run 'pio pkg install -v' in failed sketch folders."
+  else
+    print_success "All sketches repaired successfully"
+  fi
+
+  press_continue
 }
 
 #############################################################################
@@ -890,10 +994,11 @@ operations_menu() {
     echo "  5) Hardware Diagnostics & USB Fix"
     echo "  6) Configure Linux udev Rules"
     echo "  7) Show udev Rules Status"
-    echo "  8) Switch Sketch/Board"
-    echo "  9) Exit"
+    echo "  8) Repair PlatformIO Downloads (All Boards/Sketches)"
+    echo "  9) Switch Sketch/Board"
+    echo "  10) Exit"
     echo ""
-    echo -e "${MAGENTA}Enter your choice (1-9): ${NC}" | tr -d '\n'
+    echo -e "${MAGENTA}Enter your choice (1-10): ${NC}" | tr -d '\n'
     read -r choice
     
     case "${choice}" in
@@ -928,11 +1033,14 @@ operations_menu() {
         show_udev_status
         ;;
       8)
+        repair_platformio_downloads
+        ;;
+      9)
         print_info "Returning to board selection..."
         main_menu
         return
         ;;
-      9)
+      10)
         print_success "Exiting Embedded Device Lab Manager"
         exit 0
         ;;
@@ -959,6 +1067,12 @@ main_menu() {
 main() {
   print_header "Embedded Device Lab - Master Management Script"
   print_info "Initializing environment..."
+
+  if [[ "${1:-}" == "repair-downloads" ]]; then
+    verify_repo_root
+    repair_platformio_downloads
+    return
+  fi
   
   # Verify setup
   verify_repo_root
